@@ -160,3 +160,6 @@ else
   rm "$temp_file"
   echo "No se encontraron etiquetas HTML con contenido multilinea para procesar en el archivo $archivo."
 fi
+
+# version 4 for tags with atributes
+

@@ -26,5 +26,7 @@
     <a href=""><?= __("asdasdasdasd") ?></a>
     <a><?= __("asdasdasd") ?></a>
     <li><?= __("asdasdasd") ?></li>
+    <a href=""><?= __("asdfasdasdasd") ?></a>
+    <div class="prueba" id="prueba"><?= __("asdadasd") ?></div>
 </body>
 

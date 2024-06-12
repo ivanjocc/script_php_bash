@@ -1,39 +1,39 @@
 #!/bin/bash
 
-# Archivo a procesar
-archivo="index.php"
+# File to process
+file="index.php"
 
-# Verificar si el archivo existe
-if [ ! -f "$archivo" ]; then
-  echo "El archivo $archivo no existe."
+# Check if the file exists
+if [ ! -f "$file" ]; then
+  echo "The file $file does not exist."
   exit 1
 fi
 
-# Crear un archivo temporal para almacenar los cambios
+# Create a temporary file to store changes
 temp_file=$(mktemp)
 
-# Expresión regular para buscar la etiqueta <title> con texto adentro
+# Regular expression to search for the <title> tag with text inside
 regex='(<title>)([^<]+)(<\/title>)'
 
-# Leer el archivo línea por línea
-while IFS= read -r linea; do
-  # Buscar la etiqueta <title> con texto adentro
-  if [[ $linea =~ $regex ]]; then
-    etiqueta_inicio=${BASH_REMATCH[1]}
-    contenido=${BASH_REMATCH[2]}
-    etiqueta_fin=${BASH_REMATCH[3]}
-    # Verificar si el contenido ya está en el formato deseado
-    if ! grep -q "\<<?= __\(\"$contenido\"\) \?>" <<< "$linea"; then
-      # Reemplazar el contenido con el formato deseado
-      nueva_linea="${etiqueta_inicio}<?= __(\"$contenido\") ?>${etiqueta_fin}"
-      linea=${linea//$etiqueta_inicio$contenido$etiqueta_fin/$nueva_linea}
+# Read the file line by line
+while IFS= read -r line; do
+  # Search for the <title> tag with text inside
+  if [[ $line =~ $regex ]]; then
+    tag_start=${BASH_REMATCH[1]}
+    content=${BASH_REMATCH[2]}
+    tag_end=${BASH_REMATCH[3]}
+    # Check if the content is already in the desired format
+    if ! grep -q "\<<?= __\(\"$content\"\) \?>" <<< "$line"; then
+      # Replace the content with the desired format
+      new_line="${tag_start}<?= __(\"$content\") ?>${tag_end}"
+      line=${line//$tag_start$content$tag_end/$new_line}
     fi
   fi
-  # Escribir la línea (modificada o no) al archivo temporal
-  echo "$linea" >> "$temp_file"
-done < "$archivo"
+  # Write the line (modified or not) to the temporary file
+  echo "$line" >> "$temp_file"
+done < "$file"
 
-# Reemplazar el archivo original con el archivo temporal
-mv "$temp_file" "$archivo"
+# Replace the original file with the temporary file
+mv "$temp_file" "$file"
 
-echo "El archivo $archivo ha sido procesado."
+echo "The file $file has been processed."

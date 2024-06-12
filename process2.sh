@@ -284,71 +284,71 @@
 
 #!/bin/bash
 
-# Archivos a procesar
-archivos=("index.php" "components/header.php" "components/footer.php")
+# Files to process
+files=("index.php" "components/header.php" "components/footer.php")
 
-# Procesar cada archivo
-for archivo in "${archivos[@]}"; do
-  # Verificar si el archivo existe
-  if [ ! -f "$archivo" ]; then
-    echo "El archivo $archivo no existe."
+# Process each file
+for file in "${files[@]}"; do
+  # Check if the file exists
+  if [ ! -f "$file" ]; then
+    echo "The file $file does not exist."
     continue
   fi
 
-  # Crear un archivo temporal para almacenar los cambios
+  # Create a temporary file to store changes
   temp_file=$(mktemp)
 
-  # Bandera para indicar si se ha realizado alguna modificación
-  modificado=0
+  # Flag to indicate if any modification has been made
+  modified=0
 
-  # Leer el archivo línea por línea
-  while IFS= read -r linea; do
-    # Buscar etiquetas HTML específicas con contenido multilinea, con o sin atributos
-    if [[ "$linea" =~ ^([[:space:]]*)\<(p|span|div|strong|button|label|option)([[:space:]]+[^>]*)?\>([[:space:]]*)$ ]]; then
-      # Guardar la sangría antes y después de la etiqueta HTML
-      sangria_antes="${BASH_REMATCH[1]}"
-      etiqueta="${BASH_REMATCH[2]}"
-      atributos="${BASH_REMATCH[3]}"
-      sangria_despues="${BASH_REMATCH[4]}"
-      # Leer el contenido de la etiqueta HTML
-      contenido=""
-      while IFS= read -r linea; do
-        if [[ "$linea" =~ ^[[:space:]]*\<\/$etiqueta\>[[:space:]]*$ ]]; then
+  # Read the file line by line
+  while IFS= read -r line; do
+    # Search for specific HTML tags with multiline content, with or without attributes
+    if [[ "$line" =~ ^([[:space:]]*)\<(p|span|div|strong|button|label|option)([[:space:]]+[^>]*)?\>([[:space:]]*)$ ]]; then
+      # Save the indentation before and after the HTML tag
+      indent_before="${BASH_REMATCH[1]}"
+      tag="${BASH_REMATCH[2]}"
+      attributes="${BASH_REMATCH[3]}"
+      indent_after="${BASH_REMATCH[4]}"
+      # Read the content of the HTML tag
+      content=""
+      while IFS= read -r line; do
+        if [[ "$line" =~ ^[[:space:]]*\<\/$tag\>[[:space:]]*$ ]]; then
           break
         fi
-        contenido+="$linea\n"
+        content+="$line\n"
       done
-      contenido=$(echo -e "$contenido" | sed 's/^[[:space:]]*//') # Eliminar espacios en blanco al principio de cada línea del contenido
+      content=$(echo -e "$content" | sed 's/^[[:space:]]*//') # Remove leading whitespace from each line of content
 
-      # Caso especial para etiquetas <a>
-      if [[ "$etiqueta" == "a" ]]; then
-        contenido=$(echo -e "$contenido" | sed ':a;N;$!ba;s/\n//g') # Eliminar todos los saltos de línea del contenido
-        nueva_etiqueta="${sangria_antes}<$etiqueta${atributos}><?= __(\"$contenido\") ?></$etiqueta>${sangria_despues}"
+      # Special case for <a> tags
+      if [[ "$tag" == "a" ]]; then
+        content=$(echo -e "$content" | sed ':a;N;$!ba;s/\n//g') # Remove all newlines from the content
+        new_tag="${indent_before}<$tag${attributes}><?= __(\"$content\") ?></$tag>${indent_after}"
       else
-        # Procesar cada línea individualmente para etiquetas que no sean <a>
-        contenido_procesado=""
-        while IFS= read -r sublinea; do
-          sublinea=$(echo "$sublinea" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//') # Eliminar espacios al principio y al final
-          contenido_procesado+="<?= __(\"$sublinea\") ?>"
-        done <<< "$(echo -e "$contenido")"
-        # Reemplazar el contenido con el formato deseado, manteniendo la sangría
-        nueva_etiqueta="${sangria_antes}<$etiqueta${atributos}>${contenido_procesado}</$etiqueta>${sangria_despues}"
+        # Process each line individually for tags other than <a>
+        processed_content=""
+        while IFS= read -r subline; do
+          subline=$(echo "$subline" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//') # Remove leading and trailing whitespace
+          processed_content+="<?= __(\"$subline\") ?>"
+        done <<< "$(echo -e "$content")"
+        # Replace the content with the desired format, keeping the indentation
+        new_tag="${indent_before}<$tag${attributes}>${processed_content}</$tag>${indent_after}"
       fi
-      # Escribir la nueva etiqueta al archivo temporal
-      echo -ne "$nueva_etiqueta\n" >> "$temp_file"
-      modificado=1
+      # Write the new tag to the temporary file
+      echo -ne "$new_tag\n" >> "$temp_file"
+      modified=1
       continue
     fi
-    # Escribir la línea original al archivo temporal si no se ha modificado
-    echo -ne "$linea\n" >> "$temp_file"
-  done < "$archivo"
+    # Write the original line to the temporary file if not modified
+    echo -ne "$line\n" >> "$temp_file"
+  done < "$file"
 
-  # Si se realizó alguna modificación, reemplazar el archivo original con el archivo temporal
-  if [ "$modificado" -eq 1 ]; then
-    mv "$temp_file" "$archivo"
-    echo "El archivo $archivo ha sido procesado."
+  # If any modification was made, replace the original file with the temporary file
+  if [ "$modified" -eq 1 ]; then
+    mv "$temp_file" "$file"
+    echo "The file $file has been processed."
   else
     rm "$temp_file"
-    echo "No se encontraron etiquetas HTML con contenido multilinea para procesar en el archivo $archivo."
+    echo "No multiline HTML tags were found to process in the file $file."
   fi
 done

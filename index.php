@@ -21,5 +21,11 @@
     <input type="text" placeholder="<?= __("asdjasdjasd") ?>">
 
     <h2 class="asdasdasd"><?= __("asdasdasd") ?></h2>
+    <p><?= __("asdasdasd") ?></p>
+
+    <select name="" id="">
+        <option value=""><?= __("asdasdasd") ?></option>
+        <option value=""><?= __("asdasdasd") ?></option>
+    </select>
 </body>
 

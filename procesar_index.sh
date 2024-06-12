@@ -111,45 +111,90 @@
 # echo "El archivo $archivo ha sido procesado."
 
 
-# version final just 1 row
+# version 4 just 1 row
 
+# #!/bin/bash
+
+# # Archivo a procesar
+# archivo="index.php"
+
+# # Verificar si el archivo existe
+# if [ ! -f "$archivo" ]; then
+#   echo "El archivo $archivo no existe."
+#   exit 1
+# fi
+
+# # Crear un archivo temporal para almacenar los cambios
+# temp_file=$(mktemp)
+
+# # Expresión regular para buscar cualquier etiqueta con texto adentro
+# regex='(<[^>]+>)([^<]+)(<\/[^>]+>)'
+
+# # Leer el archivo línea por línea
+# while IFS= read -r linea; do
+#   # Buscar cualquier etiqueta con texto adentro
+#   while [[ $linea =~ $regex ]]; do
+#     etiqueta_inicio=${BASH_REMATCH[1]}
+#     contenido=${BASH_REMATCH[2]}
+#     etiqueta_fin=${BASH_REMATCH[3]}
+#     # Verificar si el contenido ya está en el formato deseado
+# 	if ! grep -q "\<<?= __\(\"$contenido\"\) \?>" <<< "$linea"; then
+# 	# Reemplazar el contenido con el formato deseado
+# 	nueva_linea="${etiqueta_inicio}<?= __(\"$contenido\") ?>${etiqueta_fin}"
+# 	linea=${linea//$etiqueta_inicio$contenido$etiqueta_fin/$nueva_linea}
+# 	fi
+
+#   done
+#   # Escribir la línea (modificada o no) al archivo temporal
+#   echo "$linea" >> "$temp_file"
+# done < "$archivo"
+
+# # Reemplazar el archivo original con el archivo temporal
+# mv "$temp_file" "$archivo"
+
+# echo "El archivo $archivo ha sido procesado."
+
+
+# version 5 with components and index
 #!/bin/bash
 
-# Archivo a procesar
-archivo="index.php"
-
-# Verificar si el archivo existe
-if [ ! -f "$archivo" ]; then
-  echo "El archivo $archivo no existe."
-  exit 1
-fi
-
-# Crear un archivo temporal para almacenar los cambios
-temp_file=$(mktemp)
+# Archivos a procesar
+archivos=("index.php" "components/header.php" "components/footer.php")
 
 # Expresión regular para buscar cualquier etiqueta con texto adentro
 regex='(<[^>]+>)([^<]+)(<\/[^>]+>)'
 
-# Leer el archivo línea por línea
-while IFS= read -r linea; do
-  # Buscar cualquier etiqueta con texto adentro
-  while [[ $linea =~ $regex ]]; do
-    etiqueta_inicio=${BASH_REMATCH[1]}
-    contenido=${BASH_REMATCH[2]}
-    etiqueta_fin=${BASH_REMATCH[3]}
-    # Verificar si el contenido ya está en el formato deseado
-	if ! grep -q "\<<?= __\(\"$contenido\"\) \?>" <<< "$linea"; then
-	# Reemplazar el contenido con el formato deseado
-	nueva_linea="${etiqueta_inicio}<?= __(\"$contenido\") ?>${etiqueta_fin}"
-	linea=${linea//$etiqueta_inicio$contenido$etiqueta_fin/$nueva_linea}
-	fi
+# Procesar cada archivo
+for archivo in "${archivos[@]}"; do
+  # Verificar si el archivo existe
+  if [ ! -f "$archivo" ]; then
+    echo "El archivo $archivo no existe."
+    continue
+  fi
 
-  done
-  # Escribir la línea (modificada o no) al archivo temporal
-  echo "$linea" >> "$temp_file"
-done < "$archivo"
+  # Crear un archivo temporal para almacenar los cambios
+  temp_file=$(mktemp)
 
-# Reemplazar el archivo original con el archivo temporal
-mv "$temp_file" "$archivo"
+  # Leer el archivo línea por línea
+  while IFS= read -r linea; do
+    # Buscar cualquier etiqueta con texto adentro
+    while [[ $linea =~ $regex ]]; do
+      etiqueta_inicio=${BASH_REMATCH[1]}
+      contenido=${BASH_REMATCH[2]}
+      etiqueta_fin=${BASH_REMATCH[3]}
+      # Verificar si el contenido ya está en el formato deseado
+      if ! grep -q "\<<?= __\(\"$contenido\"\) \?>" <<< "$linea"; then
+        # Reemplazar el contenido con el formato deseado
+        nueva_linea="${etiqueta_inicio}<?= __(\"$contenido\") ?>${etiqueta_fin}"
+        linea=${linea//$etiqueta_inicio$contenido$etiqueta_fin/$nueva_linea}
+      fi
+    done
+    # Escribir la línea (modificada o no) al archivo temporal
+    echo "$linea" >> "$temp_file"
+  done < "$archivo"
 
-echo "El archivo $archivo ha sido procesado."
+  # Reemplazar el archivo original con el archivo temporal
+  mv "$temp_file" "$archivo"
+
+  echo "El archivo $archivo ha sido procesado."
+done

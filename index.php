@@ -19,5 +19,7 @@
     <input type="text" placeholder="<?= __("asdasdasdasd") ?>">
 
     <input type="text" placeholder="<?= __("asdjasdjasd") ?>">
+
+    <h2 class="asdasdasd"><?= __("asdasdasd") ?></h2>
 </body>
 

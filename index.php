@@ -27,5 +27,22 @@
         <option value=""><?= __("asdasdasd") ?></option>
         <option value=""><?= __("asdasdasd") ?></option>
     </select>
+
+    <header>
+	<h1>Header</h1>
+	<nav>
+		<ul>
+			<li>
+				<a href="index.php"><?= __("Home") ?></a>
+			</li>
+			<li>
+				<a href="about.php"><?= __("About") ?></a>
+			</li>
+			<li>
+				<a href="contact.php"><?= __("Contact") ?></a>
+			</li>
+		</ul>
+	</nav>
+</header>
 </body>
 

@@ -572,6 +572,8 @@ Ce script traite les fichiers spécifiés pour trouver des balises HTML spécifi
     ./process_multiline_tags.sh
     ```
 
+___
+
 # Version Español, Scripts Bash para el Tratamiento de Archivos HTML
 
 Este repositorio contiene cuatro scripts Bash para el tratamiento de archivos HTML. Estos scripts realizan diversas tareas como reemplazar contenido dentro de las etiquetas HTML y asegurar que el texto esté encapsulado en un formato específico.

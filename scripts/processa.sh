@@ -83,7 +83,7 @@
 #!/bin/bash
 
 # Files to process
-files=("index.php" "./components/header.php" "./components/footer.php")
+files=("index.php" "components/header.php" "components/footer.php")
 
 # Process each file
 for file in "${files[@]}"; do

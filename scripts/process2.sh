@@ -285,7 +285,7 @@
 #!/bin/bash
 
 # Files to process
-files=("index.php" "./components/header.php" "./components/footer.php")
+files=("index.php" "components/header.php" "components/footer.php")
 
 # Process each file
 for file in "${files[@]}"; do
@@ -304,7 +304,7 @@ for file in "${files[@]}"; do
   # Read the file line by line
   while IFS= read -r line; do
     # Search for specific HTML tags with multiline content, with or without attributes
-    if [[ "$line" =~ ^([[:space:]]*)\<(p|span|div|strong|button|label|option|h2|a)([[:space:]]+[^>]*)?\>([[:space:]]*)$ ]]; then
+    if [[ "$line" =~ ^([[:space:]]*)\<(p|span|div|strong|button|label|option)([[:space:]]+[^>]*)?\>([[:space:]]*)$ ]]; then
       # Save the indentation before and after the HTML tag
       indent_before="${BASH_REMATCH[1]}"
       tag="${BASH_REMATCH[2]}"
